@@ -68,21 +68,21 @@ $(document).ready(function() {
         });
     }
 
-    // Navbar glow effect on click
+    // Navbar tap animation
     $('.nav-link').on('click', function(){
-        $(this).animate({ fontSize: '20px' }, 200)
-               .animate({ fontSize: '16px' }, 200);
+      $(this).animate({ fontSize: '1.2rem' }, 150)
+             .animate({ fontSize: '1rem' }, 150);
     });
 
-    // Card bounce effect
-    $('.card').hover(function(){
-        $(this).animate({ marginTop: "-5px" }, 200);
-    }, function(){
-        $(this).animate({ marginTop: "0px" }, 200);
+    // Card bounce effect on tap
+    $('.card').on('touchstart', function(){
+      $(this).animate({ marginTop: "-5px" }, 200);
+    }).on('touchend', function(){
+      $(this).animate({ marginTop: "0px" }, 200);
     });
 
     // Announcement badge sparkle loop
     setInterval(function(){
-        $('.badge').fadeOut(500).fadeIn(500);
+      $('.badge').fadeOut(400).fadeIn(400);
     }, 2000);
 });
