@@ -1,0 +1,32 @@
+WEBSITE DESIGN
+
+a) Website Site Map
+
+Home Page (index.php)
+  |-- Login (login.php)
+  |-- Registration (register.php)
+  |-- User Dashboard (dashboard.php) [Protected]
+        |-- Announcements (announcements.php) [Protected CRUD]
+        |-- Events (events.php) [Protected CRUD]
+        |-- Logout (logout.php)
+
+b) Wireframes
+- Homepage: Navigation bar at the top, hero section with welcome message and call to action (Login/Register), footer at the bottom.
+- Login Page: Navigation bar, centered login form (Email, Password) within a card, submit button, link to registration, footer.
+- Registration Page: Navigation bar, centered registration form (Name, Email, Password, Confirm) within a card, submit button, link to login, footer.
+
+c) Design Justification
+- Colour Scheme: A clean, trustworthy color scheme using County Blue (#004085) as primary and crisp white backgrounds. This instills trust and readability for a government/community portal.
+- Typography: Arial or Helvetica sans-serif fonts for clear readability across all devices.
+- Layout: A responsive grid layout using Bootstrap containers, rows, and columns to ensure proper display on mobile phones and desktop computers.
+- Bootstrap Components: 
+  - Navbar: For consistent, mobile-friendly navigation.
+  - Cards: Used in dashboard and forms to cleanly separate content areas.
+  - Tables (table-striped, table-hover): For clean data presentation in CRUD operations.
+  - Alerts: To provide immediate feedback (success/error messages).
+
+d) Visual Hierarchy
+- Content is prioritized using varying font sizes and weights. The site title and main headings (H1, H2) are prominent.
+- Primary actions (like "Login" or "Add Announcement") use solid primary colored buttons to draw attention.
+- Navigational elements are placed consistently at the top.
+- Data tables are centralized and striped to aid reading across rows.

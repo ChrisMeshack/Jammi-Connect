@@ -1,0 +1,44 @@
+WEBSITE HOSTING PREPARATION
+
+f) Hosting Requirements
+- PHP Version: 8.x (or at least 7.4+) to support secure password hashing and prepared statements.
+- MySQL Version: 5.7+ or MariaDB 10.x.
+- Disk Space: At least 1GB for website files and database growth.
+
+g) Domain Name Selection and Justification
+- Suggested Domain: jamiiconnect.go.ke
+- Justification: The .go.ke extension indicates an official government portal in Kenya, establishing trust and credibility among the county residents.
+
+h) Hosting Package Selection
+- Selection: VPS (Virtual Private Server) or Cloud Hosting.
+- Justification: A VPS offers better security, scalability, and performance compared to shared hosting. As a county portal, traffic might spike during important announcements, and a VPS handles traffic surges more reliably.
+
+i) Website Deployment Procedure
+1. Compress all project files into a .zip archive.
+2. Log in to the hosting control panel (e.g., cPanel).
+3. Navigate to File Manager -> public_html.
+4. Upload the .zip archive and extract it.
+5. Update the db.php file with the live database credentials.
+
+j) Database Deployment Procedure
+1. Log in to the live server's cPanel and open MySQL Databases.
+2. Create a new database and a new database user.
+3. Assign all privileges to the user for the new database.
+4. Open phpMyAdmin on the live server.
+5. Select the newly created database and click "Import".
+6. Upload the jamii_connect_db.sql file and execute to populate the tables.
+
+k) SSL/TLS Configuration
+1. Use Let's Encrypt or purchase a commercial SSL certificate.
+2. Install the certificate via the cPanel SSL/TLS Status module.
+3. Force HTTPS redirection by adding rewrite rules in the .htaccess file to ensure all traffic is encrypted.
+
+l) Security Measures
+- .htaccess: Disable directory browsing (Options -Indexes).
+- Input Sanitization: Implement prepared statements for all SQL queries and use htmlspecialchars() on output to prevent XSS.
+- File Permissions: Ensure directories are set to 755 and files to 644.
+
+m) Backup Strategy
+- Frequency: Daily automated backups.
+- Tools: cPanel Backup Wizard or a cron job running mysqldump.
+- Storage Location: Off-site cloud storage (e.g., AWS S3 or Google Drive) to ensure disaster recovery.

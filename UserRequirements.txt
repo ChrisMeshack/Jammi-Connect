@@ -1,0 +1,34 @@
+USER REQUIREMENTS SPECIFICATION
+
+a) Stakeholder Identification
+1. County Residents: Interest in finding community programs, notices, events, and services easily.
+2. County Government Officials: Interest in disseminating information, announcements, and managing services effectively.
+3. System Administrators: Interest in maintaining the portal, ensuring security, uptime, and managing user roles.
+4. Local Event Organizers: Interest in promoting local community events and tracking attendees or interest.
+
+b) Functional Requirements
+1. User Registration: The system shall allow users to register an account.
+2. User Login: The system shall allow registered users to log in securely using sessions.
+3. Dashboard Access: The system shall provide a protected dashboard for logged-in users with summary counts.
+4. Announcements Management (CRUD): The system shall allow users to Create, Read, Update, and Delete announcements.
+5. Events Management (CRUD): The system shall allow users to Create, Read, Update, and Delete community events.
+6. Service Information Display: The system shall display schedules, locations, and contacts for public services.
+
+c) Non-Functional Requirements
+1. Security: Passwords must be hashed. Sessions must protect restricted pages from unauthorized access.
+2. Performance: Pages must load in under 2 seconds.
+3. Responsiveness: The user interface must adapt to various screen sizes (mobile, tablet, desktop) using Bootstrap.
+4. Usability: The application must be intuitive and easy to navigate.
+5. Availability: The system should aim for 99.9% uptime.
+
+d) User Requirements Specification Table
+| Req ID | Description | Priority |
+|---|---|---|
+| UR-01 | Register and Login | High |
+| UR-02 | View Announcements and Events | High |
+| UR-03 | Manage Announcements and Events | High |
+| UR-04 | View Service Information | Medium |
+| UR-05 | Responsive Design | High |
+
+e) Requirements Validation
+Requirements will be reviewed and validated by stakeholders through prototype demonstrations, feedback sessions, and sign-offs. We will present wireframes and a working prototype for stakeholders to verify that their needs and use cases are fully supported before final deployment.

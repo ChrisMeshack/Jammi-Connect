@@ -1,0 +1,69 @@
+WEBSITE TESTING AND MAINTENANCE
+
+PART A: WEBSITE TESTING
+Test Cases:
+
+1. Registration with valid data
+- Expected Result: User is registered, password hashed, and redirected to login page.
+- Actual Result: Pass
+- Status: Pass
+
+2. Login with correct credentials
+- Expected Result: Session created, redirected to dashboard displaying user's name.
+- Actual Result: Pass
+- Status: Pass
+
+3. Login with wrong password
+- Expected Result: Login fails, inline error message displayed.
+- Actual Result: Pass
+- Status: Pass
+
+4. Session redirect when not logged in
+- Expected Result: Accessing protected page (dashboard.php) redirects to login.php.
+- Actual Result: Pass
+- Status: Pass
+
+5. Add a new announcement
+- Expected Result: Record inserted into database, listed on announcements.php without duplicates.
+- Actual Result: Pass
+- Status: Pass
+
+6. Edit an existing event
+- Expected Result: Form pre-populates, on submit database is updated, changes reflect immediately.
+- Actual Result: Pass
+- Status: Pass
+
+7. Delete a record from the database
+- Expected Result: Confirmation prompt appears, upon confirmation record is removed from table.
+- Actual Result: Pass
+- Status: Pass
+
+8. Responsive layout on mobile
+- Expected Result: Navbar collapses to hamburger menu, tables scroll horizontally or stack, layout is clean.
+- Actual Result: Pass
+- Status: Pass
+
+
+PART B: WEBSITE MAINTENANCE
+Maintenance Plan:
+
+- Website Monitoring
+  - Tools: UptimeRobot, Google Analytics.
+  - Frequency: 24/7 automated monitoring, weekly review of analytics.
+
+- Website and PHP Updates
+  - Version Control: Git repository for tracking changes.
+  - Update Schedule: Monthly checks for PHP version updates and Bootstrap/jQuery library updates.
+
+- Bug Fixing Procedures
+  - Logging: Users report bugs via a contact form, logged in a ticketing system (e.g., Jira).
+  - Prioritization: Critical bugs (login failure, security) fixed immediately; minor bugs scheduled for weekly sprints.
+  - Resolution: Tested in a staging environment before deploying to production.
+
+- Security Updates
+  - Patching: Apply security patches to server and software immediately upon release.
+  - SQL Injection Prevention: Enforce strict use of prepared statements.
+  - Session Security: Implement session timeouts and regenerate session IDs on login.
+
+- Database Backup Procedures
+  - Schedule: Daily automated mysqldump script at 2:00 AM. Weekly full server image backup.
