@@ -4,100 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
-require_once 'db.php';
-
-// Auto-delete past events
-$conn->query("DELETE FROM events WHERE event_date < CURDATE()");
-
-$msg = '';
-$msg_type = '';
-
-// Handle DELETE
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-        die('Unauthorized action.');
-    }
-    $id = intval($_GET['id']);
-    $stmt = $conn->prepare('DELETE FROM events WHERE id = ?');
-    $stmt->bind_param('i', $id);
-    if ($stmt->execute()) {
-        header('Location: events.php?msg=deleted');
-        exit();
-    }
-}
-
-// Check for messages
-if (isset($_GET['msg'])) {
-    if ($_GET['msg'] === 'deleted') {
-        $msg = 'Record deleted successfully.';
-        $msg_type = 'danger';
-    } elseif ($_GET['msg'] === 'added') {
-        $msg = 'Record added successfully.';
-        $msg_type = 'success';
-    } elseif ($_GET['msg'] === 'updated') {
-        $msg = 'Record updated successfully.';
-        $msg_type = 'success';
-    }
-}
-
-// Variables for form
-$edit_id = 0;
-$edit_title = '';
-$edit_desc = '';
-$edit_date = '';
-$edit_venue = '';
-$is_edit = false;
-
-if (isset($_GET['action']) && $_GET['action'] === 'edit' && isset($_GET['id'])) {
-    $edit_id = intval($_GET['id']);
-    $is_edit = true;
-    $stmt = $conn->prepare('SELECT title, description, event_date, venue FROM events WHERE id = ?');
-    $stmt->bind_param('i', $edit_id);
-    $stmt->execute();
-    $res = $stmt->get_result();
-    if ($res->num_rows > 0) {
-        $row = $res->fetch_assoc();
-        $edit_title = $row['title'];
-        $edit_desc = $row['description'];
-        $edit_date = $row['event_date'];
-        $edit_venue = $row['venue'];
-    }
-}
-
-// Handle POST (Create / Update)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-        die('Unauthorized action.');
-    }
-    $title = trim($_POST['title'] ?? '');
-    $description = trim($_POST['description'] ?? '');
-    $event_date = trim($_POST['event_date'] ?? '');
-    $venue = trim($_POST['venue'] ?? '');
-    $id = intval($_POST['id'] ?? 0);
-
-    if (empty($title) || empty($event_date)) {
-        $msg = 'Please fill all required fields.';
-        $msg_type = 'warning';
-    } else {
-        if ($id > 0) {
-            // UPDATE
-            $stmt = $conn->prepare('UPDATE events SET title=?, description=?, event_date=?, venue=? WHERE id=?');
-            $stmt->bind_param('ssssi', $title, $description, $event_date, $venue, $id);
-            if ($stmt->execute()) {
-                header('Location: events.php?msg=updated');
-                exit();
-            }
-        } else {
-            // INSERT
-            $stmt = $conn->prepare('INSERT INTO events (title, description, event_date, venue) VALUES (?, ?, ?, ?)');
-            $stmt->bind_param('ssss', $title, $description, $event_date, $venue);
-            if ($stmt->execute()) {
-                header('Location: events.php?msg=added');
-                exit();
-            }
-        }
-    }
-}
+$is_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -105,109 +12,112 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Manage Events - Jamii Connect</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-light">
+<body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg">
       <div class="container">
         <a class="navbar-brand" href="index.php">Jamii Connect</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-            <li class="nav-item"><a class="nav-link" href="announcements.php">Announcements</a></li>
-            <li class="nav-item"><a class="nav-link active" href="events.php">Events</a></li>
-            <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item"><a class="nav-link" href="dashboard.php"><i class="fa-solid fa-chart-line me-1"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="announcements.php"><i class="fa-solid fa-bullhorn me-1"></i> Announcements</a></li>
+            <li class="nav-item"><a class="nav-link active" href="events.php"><i class="fa-regular fa-calendar me-1"></i> Events</a></li>
+            
+            <li class="nav-item dropdown ms-2">
+              <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-circle-user fa-lg"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item text-danger" href="logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
     <div class="container mt-5 flex-grow-1">
-        <h2>Manage Events</h2>
-
-        <?php if ($msg): ?>
-            <div class="alert alert-<?php echo $msg_type; ?> alert-dismissible fade show" role="alert">
-                <?php echo htmlspecialchars($msg); ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h2>Events</h2>
+            <div class="d-flex gap-2">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search events..." aria-label="Search events">
+                <select id="categoryFilter" class="form-select" aria-label="Filter by category">
+                    <option value="All">All Categories</option>
+                    <option value="General">General</option>
+                    <option value="Community">Community</option>
+                    <option value="Festival">Festival</option>
+                    <option value="Meeting">Meeting</option>
+                </select>
             </div>
-        <?php endif; ?>
+        </div>
 
         <div class="row">
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+            <?php if ($is_admin): ?>
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><?php echo $is_edit ? 'Edit Event' : 'Add New Event'; ?></h5>
+                    <div class="card-header">
+                        <h5 class="mb-0">Create Event</h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="events.php">
-                            <input type="hidden" name="id" value="<?php echo $edit_id; ?>">
+                        <form id="createForm">
+                            <input type="hidden" name="action" value="create_event">
                             <div class="mb-3">
-                                <label for="title" class="form-label">Title *</label>
-                                <input type="text" name="title" id="title" class="form-control" value="<?php echo htmlspecialchars($edit_title); ?>" required>
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" name="title" id="title" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category" id="category" class="form-select" required>
+                                    <option value="General">General</option>
+                                    <option value="Community">Community</option>
+                                    <option value="Festival">Festival</option>
+                                    <option value="Meeting">Meeting</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea name="description" id="description" class="form-control" rows="3"><?php echo htmlspecialchars($edit_desc); ?></textarea>
+                                <textarea name="description" id="description" class="form-control" rows="3"></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="event_date" class="form-label">Event Date *</label>
-                                <input type="date" name="event_date" id="event_date" class="form-control" value="<?php echo htmlspecialchars($edit_date); ?>" required>
+                                <label for="event_date" class="form-label">Event Date</label>
+                                <input type="date" name="event_date" id="event_date" class="form-control" required>
                             </div>
                             <div class="mb-3">
                                 <label for="venue" class="form-label">Venue</label>
-                                <input type="text" name="venue" id="venue" class="form-control" value="<?php echo htmlspecialchars($edit_venue); ?>">
+                                <input type="text" name="venue" id="venue" class="form-control">
                             </div>
-                            <button type="submit" class="btn <?php echo $is_edit ? 'btn-warning' : 'btn-primary'; ?> w-100">
-                                <?php echo $is_edit ? 'Update Event' : 'Add Event'; ?>
-                            </button>
-                            <?php if ($is_edit): ?>
-                                <a href="events.php" class="btn btn-secondary w-100 mt-2">Cancel</a>
-                            <?php endif; ?>
+                            <div class="mb-3">
+                                <label for="attachment" class="form-label">Event Poster (Optional)</label>
+                                <input type="file" name="attachment" id="attachment" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Publish Event</button>
                         </form>
                     </div>
                 </div>
             </div>
             <?php endif; ?>
 
-            <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'col-md-8' : 'col-md-12'; ?>">
+            <div class="<?php echo $is_admin ? 'col-md-8' : 'col-md-12'; ?>">
                 <div class="card shadow-sm">
                     <div class="card-body p-0 table-responsive">
-                        <table class="table table-striped table-hover mb-0">
-                            <thead class="table-primary">
+                        <table class="table mb-0">
+                            <thead>
                                 <tr>
-                                    <th>Title</th>
+                                    <th>Event & Category</th>
                                     <th>Date</th>
                                     <th>Venue</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <?php
-                                $result = $conn->query('SELECT * FROM events ORDER BY event_date DESC');
-                                if ($result->num_rows > 0) {
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo '<tr>';
-                                        echo '<td>' . htmlspecialchars($row['title']) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row['event_date']) . '</td>';
-                                        echo '<td>' . htmlspecialchars($row['venue']) . '</td>';
-                                        echo '<td class="text-end text-nowrap">';
-                                        echo '<a href="event_details.php?id=' . $row['id'] . '" class="btn btn-sm btn-info me-1 text-white">View Details</a>';
-                                        if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
-                                            echo '<a href="?action=edit&id=' . $row['id'] . '" class="btn btn-sm btn-warning me-1">Edit</a>';
-                                            echo '<a href="?action=delete&id=' . $row['id'] . '" class="btn btn-sm btn-danger delete-btn">Delete</a>';
-                                        }
-                                        echo '</td>';
-                                        echo '</tr>';
-                                    }
-                                } else {
-                                    echo '<tr><td colspan="4" class="text-center">No events found.</td></tr>';
-                                }
-                                ?>
+                            <tbody id="tableBody">
+                                <tr><td colspan="4" class="text-center py-5">Loading...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -217,14 +127,114 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p class="mb-0">&copy; <?php echo date('Y'); ?> Kitale National Polytechnic | Jamii Connect.</p>
+    <footer class="mt-5 pb-3">
+        <div class="container text-center">
+            <p class="text-muted mb-0">&copy; <?php echo date('Y'); ?> Kitale National Polytechnic | Jamii Connect.</p>
         </div>
     </footer>
 
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="app.js"></script>
+    <script>
+    const Toast = Swal.mixin({
+        toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+        timerProgressBar: true, background: 'var(--glass-bg)', color: 'var(--text-color)'
+    });
+
+    function loadData() {
+        const kw = document.getElementById('searchInput').value;
+        const cat = document.getElementById('categoryFilter').value;
+        fetch(`api_handler.php?action=get_events&keyword=${encodeURIComponent(kw)}&category=${encodeURIComponent(cat)}`)
+            .then(res => res.json())
+            .then(res => {
+                const tbody = document.getElementById('tableBody');
+                tbody.innerHTML = '';
+                if(res.status === 'success') {
+                    if(res.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5"><p class="text-muted">No events found.</p></td></tr>`;
+                    } else {
+                        res.data.forEach((item, index) => {
+                            const stagger = Math.min(index + 1, 5);
+                            let tr = document.createElement('tr');
+                            tr.className = `animate-on-scroll is-visible stagger-${stagger}`;
+                            
+                            let actions = `<a href="event_details.php?id=${item.id}" class="btn btn-sm btn-info text-white me-1" aria-label="View Details">View</a>`;
+                            if(item.attachment_path) {
+                                actions += `<a href="${item.attachment_path}" target="_blank" class="btn btn-sm btn-secondary me-1" aria-label="View Attachment">📎 Poster</a>`;
+                            }
+                            if(res.is_admin) {
+                                actions += `<button onclick="deleteItem(${item.id})" class="btn btn-sm btn-danger" aria-label="Delete">Delete</button>`;
+                            }
+                            
+                            tr.innerHTML = `
+                                <td>
+                                    <strong>${item.title}</strong><br>
+                                    <span class="badge bg-primary text-light">${item.category}</span>
+                                </td>
+                                <td>${item.event_date}</td>
+                                <td>${item.venue}</td>
+                                <td class="text-end text-nowrap">${actions}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                } else {
+                    Toast.fire({ icon: 'error', title: 'Failed to load data' });
+                }
+            });
+    }
+
+    document.getElementById('searchInput').addEventListener('keyup', loadData);
+    document.getElementById('categoryFilter').addEventListener('change', loadData);
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', loadData);
+
+    <?php if ($is_admin): ?>
+    document.getElementById('createForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fd = new FormData(this);
+        fetch('api_handler.php', { method: 'POST', body: fd })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    Toast.fire({ icon: 'success', title: res.message });
+                    this.reset();
+                    loadData();
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message });
+                }
+            });
+    });
+
+    function deleteItem(id) {
+        Swal.fire({
+            title: 'Delete Event?',
+            text: "This action is logged and cannot be undone!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: 'rgba(0,0,0,0.1)',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const fd = new FormData();
+                fd.append('action', 'delete_event');
+                fd.append('id', id);
+                fetch('api_handler.php', { method: 'POST', body: fd })
+                    .then(res => res.json())
+                    .then(res => {
+                        if(res.status === 'success') {
+                            Toast.fire({ icon: 'success', title: res.message });
+                            loadData();
+                        } else {
+                            Toast.fire({ icon: 'error', title: res.message });
+                        }
+                    });
+            }
+        });
+    }
+    <?php endif; ?>
+    </script>
 </body>
 </html>

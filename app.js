@@ -1,23 +1,4 @@
 $(document).ready(function() {
-    // 1. Live character counter for inputs with max length 100
-    $('input[type="text"], input[type="password"], input[type="email"]').each(function() {
-        var $input = $(this);
-        if(!$input.attr('maxlength')) {
-            $input.attr('maxlength', 100);
-        }
-        var $counter = $('<div class="char-counter">100 characters remaining</div>');
-        $input.after($counter);
-
-        $input.on('input', function() {
-            var remaining = 100 - $(this).val().length;
-            $counter.text(remaining + ' characters remaining');
-            if (remaining < 10) {
-                $counter.addClass('text-danger');
-            } else {
-                $counter.removeClass('text-danger');
-            }
-        });
-    });
 
     // 2. Table row hover highlighting
     $('table tbody tr').on('mouseover', function() {
