@@ -32,7 +32,7 @@ foreach ($queries as $q) {
 }
 
 // Insert admin user
-$email = 'jamiiconnect@gmail.com';
+$email = 'chrismeshack24@gmail.com';
 $password = 'Admin@1234';
 $hashed = password_hash($password, PASSWORD_DEFAULT);
 
@@ -48,8 +48,14 @@ if ($stmt->get_result()->num_rows === 0) {
         echo "Failed to create admin user.\n";
     }
 } else {
-    echo "Admin user already exists.\n";
+    // Update existing
+    $upd = $conn->prepare("UPDATE users SET password = ?, role = 'admin' WHERE email = ?");
+    $upd->bind_param("ss", $hashed, $email);
+    $upd->execute();
+    echo "Admin user updated successfully.\n";
 }
+
+$conn->query("DELETE FROM users WHERE email = 'jamiiconnect@gmail.com'");
 
 if (!is_dir('uploads')) {
     mkdir('uploads', 0777, true);

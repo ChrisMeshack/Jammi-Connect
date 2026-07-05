@@ -25,9 +25,9 @@ $conn->query("CREATE TABLE IF NOT EXISTS event_bookings (
     CONSTRAINT fk_booking_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 )");
 
-// Ensure admin user exists
+// Ensure SINGLE admin user exists
 $admin_email = 'chrismeshack24@gmail.com';
-$admin_pass = 'Mesh@1234';
+$admin_pass = 'Admin@1234';
 $hashed = password_hash($admin_pass, PASSWORD_DEFAULT);
 
 $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
@@ -36,12 +36,15 @@ $stmt->execute();
 $res = $stmt->get_result();
 
 if ($res->num_rows == 0) {
-    $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, role) VALUES ('Admin', ?, ?, 'admin')");
+    $stmt = $conn->prepare("INSERT INTO users (full_name, email, password, role) VALUES ('Super Admin', ?, ?, 'admin')");
     $stmt->bind_param("ss", $admin_email, $hashed);
     $stmt->execute();
 } else {
-    $stmt = $conn->prepare("UPDATE users SET role = 'admin' WHERE email = ?");
-    $stmt->bind_param("s", $admin_email);
+    $stmt = $conn->prepare("UPDATE users SET role = 'admin', password = ? WHERE email = ?");
+    $stmt->bind_param("ss", $hashed, $admin_email);
     $stmt->execute();
 }
+
+// Delete the old admin
+$conn->query("DELETE FROM users WHERE email = 'jamiiconnect@gmail.com'");
 ?>

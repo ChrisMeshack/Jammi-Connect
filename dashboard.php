@@ -168,6 +168,7 @@ $is_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
 
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="app.js?v=2"></script>
     <script>
         // Fetch Advanced Analytics
         fetch('api_handler.php?action=get_analytics')

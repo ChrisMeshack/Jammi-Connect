@@ -135,6 +135,7 @@ $is_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
 
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="app.js?v=2"></script>
     <script>
     const Toast = Swal.mixin({
         toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,

@@ -139,12 +139,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row">
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><?php echo $is_edit ? 'Edit Service' : 'Add New Service'; ?></h5>
+                <div class="card glass-card border-0 shadow-lg mb-4">
+                    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0">
+                        <h5 class="mb-0 fw-bold" style="color: var(--color-dark);"><?php echo $is_edit ? 'Edit Service' : 'Add New Service'; ?></h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="services.php">
+                        <form method="post" action="services.php" class="glass-form border-0 p-3 shadow-none">
                             <input type="hidden" name="id" value="<?php echo $edit_id; ?>">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name *</label>
@@ -175,8 +175,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <div class="<?php echo (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'col-md-8' : 'col-md-12'; ?>">
-                <div class="card shadow-sm">
-                    <div class="card-body p-0 table-responsive">
+                <div class="card glass-card border-0 shadow-lg">
+                    <div class="card-body p-0 table-responsive" style="border-radius: 1.5rem; overflow: hidden;">
                         <table class="table table-striped table-hover mb-0">
                             <thead class="table-primary">
                                 <tr>
@@ -228,6 +228,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="js/jquery-3.7.1.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=2"></script>
 </body>
 </html>
