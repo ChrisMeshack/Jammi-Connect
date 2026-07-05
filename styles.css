@@ -159,6 +159,23 @@ body {
 }
 
 /* ---------------- FORMS ---------------- */
+/* Admin Specific Forms */
+.admin-glass-card {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.5), rgba(249, 115, 22, 0.5)) !important;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 2px solid var(--glass-border) !important;
+    box-shadow: var(--glass-shadow);
+    border-radius: 1.5rem;
+    overflow: hidden;
+}
+.admin-glass-card .card-header {
+    background: rgba(255,255,255,0.2) !important;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    color: var(--text-primary) !important;
+    font-weight: 800;
+}
+
 .glass-form, form {
     background: var(--form-bg);
     backdrop-filter: var(--glass-blur);

@@ -139,12 +139,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row">
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <div class="col-md-4 mb-4">
-                <div class="card glass-card border-0 shadow-lg mb-4">
-                    <div class="card-header bg-transparent border-bottom-0 pt-4 pb-0">
-                        <h5 class="mb-0 fw-bold" style="color: var(--color-dark);"><?php echo $is_edit ? 'Edit Service' : 'Add New Service'; ?></h5>
+                <div class="card admin-glass-card mb-4">
+                    <div class="card-header pt-4 pb-0">
+                        <h5 class="mb-0 fw-bold"><?php echo $is_edit ? 'Edit Service' : 'Add New Service'; ?></h5>
                     </div>
                     <div class="card-body">
-                        <form method="post" action="services.php" class="glass-form border-0 p-3 shadow-none">
+                        <form method="post" action="services.php" style="background: transparent; border: none; box-shadow: none; padding: 0;">
                             <input type="hidden" name="id" value="<?php echo $edit_id; ?>">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Name *</label>

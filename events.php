@@ -61,12 +61,12 @@ $is_admin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin');
         <div class="row">
             <?php if ($is_admin): ?>
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
+                <div class="card admin-glass-card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">Create Event</h5>
                     </div>
                     <div class="card-body">
-                        <form id="createForm">
+                        <form id="createForm" style="background: transparent; border: none; box-shadow: none; padding: 0;">
                             <input type="hidden" name="action" value="create_event">
                             <div class="mb-3">
                                 <label for="title" class="form-label">Title</label>
